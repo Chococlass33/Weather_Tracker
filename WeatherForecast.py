@@ -144,7 +144,6 @@ def display_sunset(data):
         data['sys']['sunset']
     ).strftime('%H:%M:%S') + '. '
 
-
 def display_sunrise(data):
     return "Sunrise time " + datetime.datetime.fromtimestamp(
         data['sys']['sunrise']
