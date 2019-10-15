@@ -111,8 +111,7 @@ def main(city, cid, gc, z, time, temp, pressure, cloud, humidity, wind, sunset, 
     weather = dispatch_weather_request(
         location, location_type, time, temp, pressure, cloud, humidity, wind, sunset, sunrise, api)
 
-    print(
-        f"The temperature is {weather['main']['temp']} degrees {'fahrenheit' if (temp == 'fahrenheit') else 'celsius'}, {weather['weather'][0]['description']}. {display_pressure(weather) if (pressure) else ''}{display_humidity(weather) if (humidity) else ''}{display_cloud(weather) if (cloud) else ''}{display_sunrise(weather) if (sunrise) else ''}{display_sunset(weather) if (sunset) else ''}{display_wind(weather) if (wind) else ''}")
+    print(f"The temperature is {weather['main']['temp']} degrees {'fahrenheit' if (temp == 'fahrenheit') else 'celsius'}, {weather['weather'][0]['description']}. {display_pressure(weather) if (pressure) else ''}{display_humidity(weather) if (humidity) else ''}{display_cloud(weather) if (cloud) else ''}{display_sunrise(weather) if (sunrise) else ''}{display_sunset(weather) if (sunset) else ''}{display_wind(weather) if (wind) else ''}")
 
 
 ''' Helper functions for displaying flag-based conditional data .'''
