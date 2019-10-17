@@ -2,4 +2,5 @@ image: python:3.5
 test:
   script: 
     - pip install mock
+    - pip install click
     - python3 WeatherForecast.spec.py
