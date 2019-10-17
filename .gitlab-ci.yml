@@ -3,4 +3,5 @@ test:
   script: 
     - pip install mock
     - pip install click
+    - pip install requests
     - python3 WeatherForecast.spec.py
