@@ -118,7 +118,7 @@ def main(city, cid, gc, z, time, temp, pressure, cloud, humidity, wind, sunset, 
     else:
         temp = False
 
-    if (temp | time | pressure | cloud | humidity | wind | sunset | sunrise):
+    if (temp | pressure | cloud | humidity | wind | sunset | sunrise):
         click.echo(f"{display_time(weather) if (time) else ''}{f} {display_pressure(weather) if (pressure) else ''}{display_humidity(weather) if (humidity) else ''}{display_cloud(weather) if (cloud) else ''}{display_sunrise(weather) if (sunrise) else ''}{display_sunset(weather) if (sunset) else ''}{display_wind(weather) if (wind) else ''}")
     else:
         click.echo("No chosen information to get")

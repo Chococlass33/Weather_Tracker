@@ -8,6 +8,7 @@ from mock import MagicMock
 from WeatherForecast import *
 
 def mock_request():
+    ''' Replacement function for the request function, instead returns the stubresponse json file.'''
     with open('stubResponse.json', 'r') as f:
         return json.load(f)
 
@@ -48,12 +49,17 @@ class TestWeatherForecast(unittest.TestCase):
         self.mock.response['sys']['sunrise']
     ).strftime('%H:%M:%S') +". ")
 
-    ''' TODO: Tests for CLI commands with mocked network calls. '''
+    '''Tests for CLI commands with mocked network calls. '''
+
+    '''The patch changes WeatherForecast.request into mock_request instead.'''
 
     @mock.patch('WeatherForecast.request', return_value = mock_request())
     def test_noapi(self, request):
+        '''
+        Test for no api given
+        '''
         runner = CliRunner();
-        result = runner.invoke(main, ['--city','Melbourne'])
+        result = runner.invoke(main, ['--city','Melbourne', '--time'])
         self.assertIsInstance(result.exception, SystemExit)
         self.assertEqual(result.output[-24:], 'Missing option "--api".\n')
 
@@ -80,6 +86,6 @@ class TestWeatherForecast(unittest.TestCase):
         runner = CliRunner();
         self.maxDiff = None
         result = runner.invoke(main, ['--api', '3c3e7a56277f4e3239deba8785391d1a', '--city', 'Melbourne', '--temp','celsius','--time','--pressure','--cloud','--humidity','--wind','--sunrise','--sunset'])
-        self.assertEqual(result.output[:-2], 'On 2019-10-15 at 21:51:14, The temperature is 286.65 degrees celsius,  Air pressure is 1014 hPa. Humidity is 82%. Cloud coverage is 75%. Sunrise time '+datetime.datetime.fromtimestamp(mock_request()['sys']['sunrise']).strftime('%H:%M:%S')+'. Sunset time '+datetime.datetime.fromtimestamp(mock_request()['sys']['sunset']).strftime('%H:%M:%S')+'. Wind speed is 3.1 from 200 degrees')
+        self.assertEqual(result.output[:-2], 'On 2019-10-15 at ' + datetime.datetime.fromtimestamp(mock_request()['dt']).strftime('%H:%M:%S')+' The temperature is 286.65 degrees celsius,  Air pressure is 1014 hPa. Humidity is 82%. Cloud coverage is 75%. Sunrise time '+datetime.datetime.fromtimestamp(mock_request()['sys']['sunrise']).strftime('%H:%M:%S')+'. Sunset time '+datetime.datetime.fromtimestamp(mock_request()['sys']['sunset']).strftime('%H:%M:%S')+'. Wind speed is 3.1 from 200 degrees')
 if __name__ == '__main__':
     unittest.main()
