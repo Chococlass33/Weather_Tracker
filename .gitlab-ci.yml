@@ -5,6 +5,5 @@ test:
     - pip install click
     - pip install requests
     - pip install coverage
-    - python3 WeatherForecast.spec.py
     - coverage run WeatherForecast.spec.py
     - coverage report
