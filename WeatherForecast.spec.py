@@ -78,6 +78,7 @@ class TestWeatherForecast(unittest.TestCase):
     @mock.patch('WeatherForecast.request', return_value=mock_request())
     def test_all_options(self, request):
         runner = CliRunner();
+        self.maxDiff = None
         result = runner.invoke(main, ['--api', '3c3e7a56277f4e3239deba8785391d1a', '--city', 'Melbourne', '--temp','celsius','--time','--pressure','--cloud','--humidity','--wind','--sunrise','--sunset'])
         self.assertEqual(result.output[:-2], 'On 2019-10-15 at 21:51:14, The temperature is 286.65 degrees celsius,  Air pressure is 1014 hPa. Humidity is 82%. Cloud coverage is 75%. Sunrise time 06:35:48. Sunset time 19:36:05. Wind speed is 3.1 from 200 degrees')
 if __name__ == '__main__':
