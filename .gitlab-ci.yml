@@ -1,7 +1,10 @@
 image: python:3.7
 test:
-  script: 
+  script:
     - pip install mock
     - pip install click
     - pip install requests
+    - pip install coverage
     - python3 WeatherForecast.spec.py
+    - coverage run WeatherForecast.spec.py
+    - coverage report
