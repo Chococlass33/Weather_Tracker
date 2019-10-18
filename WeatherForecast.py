@@ -20,7 +20,7 @@ def dispatch_weather_request(location, location_type, time, temp, pressure, clou
     try:
         location_query = location_switch(location_type)
     except:
-        print("Invalid location argument exception: please use one of city, cid, gc, z.")
+        click.echo("Invalid location argument exception: please use one of city, cid, gc, z.")
 
     temperature_type = 'metric'
     if temp == 'fahrenheit':
@@ -44,12 +44,12 @@ def dispatch_weather_request(location, location_type, time, temp, pressure, clou
           query_params['lon'] = int(coordinates[1])
         else:
           raise ValueError('Longitude out of range. Must be between -180 and 180.')
+    return request(url, query_params)
 
 
-    response = requests.get(url, params=query_params)
-
+def request(url, params):
+    response = requests.get(url, params)
     return response.json()
-
 
 @click.command()
 @click.option(
@@ -74,7 +74,7 @@ def dispatch_weather_request(location, location_type, time, temp, pressure, clou
 )
 @click.option(
     '--temp', '-temp',
-    help='celsius or fahrenheit (default celsius)',
+    help='celsius or fahrenheit',
 )
 @click.option('--time', '-time', is_flag=True, help='displays the current time')
 @click.option('--pressure', '-pressure', is_flag=True, help='displays air pressure information')
@@ -105,14 +105,23 @@ def main(city, cid, gc, z, time, temp, pressure, cloud, humidity, wind, sunset, 
         location = z
 
     if (num_location_args > 1):
-        print('Multiple chosen locations are specified. Please only use one of -city, -cid, -gc, -z to select a location.')
+        click.echo('Multiple chosen locations are specified. Please only use one of -city, -cid, -gc, -z to select a location.')
         return 0
 
     weather = dispatch_weather_request(
         location, location_type, time, temp, pressure, cloud, humidity, wind, sunset, sunrise, api)
 
-    print(f"The temperature is {weather['main']['temp']} degrees {'fahrenheit' if (temp == 'fahrenheit') else 'celsius'}, {weather['weather'][0]['description']}. {display_pressure(weather) if (pressure) else ''}{display_humidity(weather) if (humidity) else ''}{display_cloud(weather) if (cloud) else ''}{display_sunrise(weather) if (sunrise) else ''}{display_sunset(weather) if (sunset) else ''}{display_wind(weather) if (wind) else ''}")
+    f = ''
+    if temp:
+        f = f"The temperature is {weather['main']['temp']} degrees {'fahrenheit' if (temp == 'fahrenheit') else 'celsius'}, "
+        temp = True
+    else:
+        temp = False
 
+    if (temp | time | pressure | cloud | humidity | wind | sunset | sunrise):
+        click.echo(f"{display_time(weather) if (time) else ''}{f} {display_pressure(weather) if (pressure) else ''}{display_humidity(weather) if (humidity) else ''}{display_cloud(weather) if (cloud) else ''}{display_sunrise(weather) if (sunrise) else ''}{display_sunset(weather) if (sunset) else ''}{display_wind(weather) if (wind) else ''}")
+    else:
+        click.echo("No chosen information to get")
 
 ''' Helper functions for displaying flag-based conditional data .'''
 
@@ -141,14 +150,14 @@ def display_wind(data):
 
 def display_sunset(data):
     return "Sunset time " + datetime.datetime.fromtimestamp(
-        data['sys']['sunset']
+    data['sys']['sunset']
     ).strftime('%H:%M:%S') + '. '
 
 def display_sunrise(data):
-    return "Sunrise time " + datetime.datetime.fromtimestamp(
-        data['sys']['sunrise']
-    ).strftime('%H:%M:%S') + '. '
 
+    return "Sunrise time " + datetime.datetime.fromtimestamp(
+    data['sys']['sunrise']
+    ).strftime('%H:%M:%S') + '. '
 
 if __name__ == "__main__":
     main()

@@ -1,8 +1,15 @@
 import unittest
+import mock
 import json
+import click
+from click.testing import CliRunner
 from mock import MagicMock
 
 from WeatherForecast import *
+
+def mock_request():
+    with open('stubResponse.json', 'r') as f:
+        return json.load(f)
 
 class TestWeatherForecast(unittest.TestCase):
     ''' Runs once before the test suite executes. Reads json data from store. ''' 
@@ -42,6 +49,36 @@ class TestWeatherForecast(unittest.TestCase):
     ).strftime('%H:%M:%S') +". ")
 
     ''' TODO: Tests for CLI commands with mocked network calls. '''
-    
+
+    @mock.patch('WeatherForecast.request', return_value = mock_request())
+    def test_noapi(self, request):
+        runner = CliRunner();
+        result = runner.invoke(main, ['--city','Melbourne'])
+        self.assertIsInstance(result.exception, SystemExit)
+        self.assertEqual(result.output[-24:], 'Missing option "--api".\n')
+
+    @mock.patch('WeatherForecast.request', return_value=mock_request())
+    def test_no_options(self, request):
+        runner = CliRunner();
+        result = runner.invoke(main, ['--api','3c3e7a56277f4e3239deba8785391d1a','--city', 'Melbourne'])
+        self.assertEqual(result.output, "No chosen information to get\n")
+
+    @mock.patch('WeatherForecast.request', return_value=mock_request())
+    def test_many_locations(self, request):
+        runner = CliRunner();
+        result = runner.invoke(main, ['--api','3c3e7a56277f4e3239deba8785391d1a','--city', 'Melbourne','--z','3000','--gc','90/90','--cid','1'])
+        self.assertEqual(result.output, "Multiple chosen locations are specified. Please only use one of -city, -cid, -gc, -z to select a location.\n")
+
+    @mock.patch('WeatherForecast.request', return_value=mock_request())
+    def test_extra_help(self, request):
+        runner = CliRunner();
+        result = runner.invoke(main, ['--api','3c3e7a56277f4e3239deba8785391d1a','--city', 'Melbourne','--help'])
+        self.assertEqual(result.output[0:21], 'Usage: main [OPTIONS]')
+
+    @mock.patch('WeatherForecast.request', return_value=mock_request())
+    def test_all_options(self, request):
+        runner = CliRunner();
+        result = runner.invoke(main, ['--api', '3c3e7a56277f4e3239deba8785391d1a', '--city', 'Melbourne', '--temp','celsius','--time','--pressure','--cloud','--humidity','--wind','--sunrise','--sunset'])
+        self.assertEqual(result.output, 'On 2019-10-15 at 21:51:14, The temperature is 286.65 degrees celsius,  Air pressure is 1014 hPa. Humidity is 82%. Cloud coverage is 75%. Sunrise time 06:35:48. Sunset time 19:36:05. Wind speed is 3.1 from 200 degrees.\n')
 if __name__ == '__main__':
     unittest.main()
