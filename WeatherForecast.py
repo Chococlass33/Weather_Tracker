@@ -108,6 +108,10 @@ def main(city, cid, gc, z, time, temp, pressure, cloud, humidity, wind, sunset, 
         click.echo('Multiple chosen locations are specified. Please only use one of -city, -cid, -gc, -z to select a location.')
         return 0
 
+    if (num_location_args <= 0):
+        click.echo('No locations are specified. Please use one of -city, -cid, -gc, -z to select a location.')
+        return 0
+
     weather = dispatch_weather_request(
         location, location_type, time, temp, pressure, cloud, humidity, wind, sunset, sunrise, api)
 

@@ -76,10 +76,42 @@ class TestWeatherForecast(unittest.TestCase):
         self.assertEqual(result.output, "Multiple chosen locations are specified. Please only use one of -city, -cid, -gc, -z to select a location.\n")
 
     @mock.patch('WeatherForecast.request', return_value=mock_request())
+    def test_no_locations(self, request):
+        runner = CliRunner();
+        result = runner.invoke(main, ['--api', '3c3e7a56277f4e3239deba8785391d1a', '--temp','celsius','--time','--pressure','--cloud','--humidity','--wind','--sunrise','--sunset'])
+        self.assertEqual(result.output, "No locations are specified. Please use one of -city, -cid, -gc, -z to select a location.\n")
+
+    @mock.patch('WeatherForecast.request', return_value=mock_request())
+    def test_fahrenheit(self, request):
+        runner = CliRunner();
+        result = runner.invoke(main, ['--api', '3c3e7a56277f4e3239deba8785391d1a','--city', 'Melbourne', '--temp','fahrenheit'])
+        self.assertEqual(result.output, "The temperature is 286.65 degrees fahrenheit,  \n")
+
+    @mock.patch('WeatherForecast.request', return_value=mock_request())
+    def test_gc_error_lat(self, request):
+        runner = CliRunner();
+        result = runner.invoke(main, ['--api', '3c3e7a56277f4e3239deba8785391d1a','--gc', '100,10'])
+        self.assertIsInstance(result.exception, ValueError)
+
+
+    @mock.patch('WeatherForecast.request', return_value=mock_request())
+    def test_gc_error_long(self, request):
+        runner = CliRunner();
+        result = runner.invoke(main, ['--api', '3c3e7a56277f4e3239deba8785391d1a','--gc', '10,200'])
+        self.assertIsInstance(result.exception, ValueError)
+
+    @mock.patch('WeatherForecast.request', return_value=mock_request())
+    def test_gc_no_error(self, request):
+        runner = CliRunner();
+        result = runner.invoke(main, ['--api', '3c3e7a56277f4e3239deba8785391d1a','--gc', '0,0'])
+        self.assertIsNone(result.exception)
+
+    @mock.patch('WeatherForecast.request', return_value=mock_request())
     def test_extra_help(self, request):
         runner = CliRunner();
         result = runner.invoke(main, ['--api','3c3e7a56277f4e3239deba8785391d1a','--city', 'Melbourne','--help'])
         self.assertEqual(result.output[0:21], 'Usage: main [OPTIONS]')
+
 
     @mock.patch('WeatherForecast.request', return_value=mock_request())
     def test_all_options(self, request):

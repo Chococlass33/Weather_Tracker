@@ -22,6 +22,6 @@ With this, we are able to call the file using the CliRunner function, and reques
 
 With this, we can test the main logic and the infeasable cases.
 
-These cases include help with other arguements, which just calls help, no info selected, too many locations, and no api.
+These cases include help with other arguements, which just calls help, no info selected, too many locations, no locations, and no api.
 
-Our tests for checking multiple arguements will check every arguement to ensure maximum coverage.
+We also include test cases to cover fahrenheit usage, and error handling in processing gc inputs to cover their respective lines.
